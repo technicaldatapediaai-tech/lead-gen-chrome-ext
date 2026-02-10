@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lead Genius</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 380px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .header .subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+    
+    .content {
+      padding: 16px;
+    }
+    
+    /* Auth Section */
+    .auth-section {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .auth-section.connected {
+      border: 1px solid #4ade80;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .status-badge.connected {
+      background: rgba(74, 222, 128, 0.2);
+      color: #4ade80;
+    }
+    
+    .status-badge.disconnected {
+      background: rgba(248, 113, 113, 0.2);
+      color: #f87171;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .dot.connected { background: #4ade80; }
+    .dot.disconnected { background: #f87171; }
+    
+    /* Token Input */
+    .token-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    
+    .token-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .token-input::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+    
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-danger {
+      background: rgba(248, 113, 113, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+    
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    
+    .stat-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+    }
+    
+    /* Message Queue */
+    .queue-section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    
+    .queue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .queue-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .refresh-btn {
+      background: none;
+      border: none;
+      color: #667eea;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .message-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .message-item {
+      background: rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .message-item:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateX(2px);
+    }
+    
+    .message-lead {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    
+    .message-company {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+    }
+    
+    .message-preview {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: rgba(255,255,255,0.5);
+    }
+    
+    .empty-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    
+    /* Footer */
+    .footer {
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚀 Lead Genius</h1>
+    <div class="subtitle">LinkedIn Outreach Helper</div>
+  </div>
+  
+  <div class="content">
+    <!-- Auth Section -->
+    <div class="auth-section" id="authSection">
+      <div class="status-badge disconnected" id="statusBadge">
+        <span class="dot disconnected"></span>
+        <span id="statusText">Not Connected</span>
+      </div>
+      
+      <div id="loginForm">
+        <input type="text" class="token-input" id="apiToken" placeholder="Paste your API token here...">
+        <button class="btn btn-primary" id="connectBtn">Connect</button>
+      </div>
+      
+      <div id="connectedInfo" style="display: none;">
+        <p style="font-size: 12px; margin-bottom: 10px;">
+          Connected as: <strong id="userEmail"></strong>
+        </p>
+        <button class="btn btn-danger" id="disconnectBtn">Disconnect</button>
+      </div>
+    </div>
+    
+    <!-- Stats (shown when connected) -->
+    <div id="statsSection" style="display: none;">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="queuedCount">0</div>
+          <div class="stat-label">Queued</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="sentCount">0</div>
+          <div class="stat-label">Sent Today</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Message Queue (shown when connected) -->
+    <div class="queue-section" id="queueSection" style="display: none;">
+      <div class="queue-header">
+        <span class="queue-title">📨 Message Queue</span>
+        <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
+      </div>
+      
+      <div class="message-list" id="messageList">
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>No messages in queue</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Lead Genius v1.0.0 • Made with ❤️
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
