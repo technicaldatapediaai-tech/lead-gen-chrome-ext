@@ -46,7 +46,7 @@ const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
 
 async function autoConnectFromWebApp() {
   // Only run on the Lead Genius web app
-  if (!window.location.origin.includes('localhost:3000')) return;
+  if (!window.location.host.includes('localhost:3000') && !window.location.host.includes('lead-gen-frontend-orcin.vercel.app')) return;
 
   // Check if extension context is still valid
   if (!isExtensionValid()) return;
