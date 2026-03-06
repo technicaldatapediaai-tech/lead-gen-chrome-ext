@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       width: 380px;
       min-height: 400px;
@@ -18,40 +19,40 @@
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       color: #fff;
     }
-    
+
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 20px;
       text-align: center;
     }
-    
+
     .header h1 {
       font-size: 18px;
       font-weight: 600;
     }
-    
+
     .header .subtitle {
       font-size: 12px;
       opacity: 0.8;
       margin-top: 4px;
     }
-    
+
     .content {
       padding: 16px;
     }
-    
+
     /* Auth Section */
     .auth-section {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 16px;
     }
-    
+
     .auth-section.connected {
       border: 1px solid #4ade80;
     }
-    
+
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -61,47 +62,84 @@
       font-size: 12px;
       margin-bottom: 12px;
     }
-    
+
     .status-badge.connected {
       background: rgba(74, 222, 128, 0.2);
       color: #4ade80;
     }
-    
+
     .status-badge.disconnected {
       background: rgba(248, 113, 113, 0.2);
       color: #f87171;
     }
-    
+
     .dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
     }
-    
-    .dot.connected { background: #4ade80; }
-    .dot.disconnected { background: #f87171; }
-    
-    /* Token Input */
-    .token-input {
+
+    .dot.connected {
+      background: #4ade80;
+    }
+
+    .dot.disconnected {
+      background: #f87171;
+    }
+
+    /* Form Inputs */
+    .form-input {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 8px;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
       color: #fff;
       font-size: 13px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      transition: border-color 0.2s;
     }
-    
-    .token-input:focus {
+
+    .form-input:focus {
       outline: none;
       border-color: #667eea;
     }
-    
-    .token-input::placeholder {
-      color: rgba(255,255,255,0.4);
+
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
-    
+
+    .form-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 4px;
+      display: block;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
     /* Buttons */
     .btn {
       width: 100%;
@@ -113,23 +151,77 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    
+
     .btn-primary {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
     }
-    
+
     .btn-primary:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
-    
+
+    .btn-auto {
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      font-size: 12px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-auto:hover {
+      background: rgba(102, 126, 234, 0.25);
+    }
+
     .btn-danger {
       background: rgba(248, 113, 113, 0.2);
       color: #f87171;
       border: 1px solid rgba(248, 113, 113, 0.3);
     }
-    
+
+    /* Error */
+    .error-msg {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    /* Connecting */
+    .connecting-state {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     /* Stats */
     .stats-grid {
       display: grid;
@@ -137,118 +229,165 @@
       gap: 10px;
       margin-bottom: 16px;
     }
-    
+
     .stat-card {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       padding: 14px;
       text-align: center;
     }
-    
+
     .stat-value {
       font-size: 24px;
       font-weight: 700;
       color: #667eea;
     }
-    
+
     .stat-label {
       font-size: 11px;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255, 255, 255, 0.6);
       margin-top: 4px;
     }
-    
-    /* Message Queue */
-    .queue-section {
-      background: rgba(255,255,255,0.05);
+
+    /* Message Queue & History */
+    .queue-section,
+    .history-section {
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 12px;
       padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    
-    .queue-header {
+
+    .queue-header,
+    .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
     }
-    
-    .queue-title {
+
+    .queue-title,
+    .history-title {
       font-size: 14px;
       font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    
+
     .refresh-btn {
-      background: none;
-      border: none;
-      color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      color: #818cf8;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
     }
-    
-    .message-list {
-      max-height: 200px;
+
+    .refresh-btn:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .message-list,
+    .history-list {
+      max-height: 180px;
       overflow-y: auto;
+      padding-right: 4px;
     }
-    
-    .message-item {
-      background: rgba(255,255,255,0.08);
+
+    /* Custom Scrollbar */
+    .message-list::-webkit-scrollbar,
+    .history-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .message-list::-webkit-scrollbar-thumb,
+    .history-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .message-item,
+    .history-item {
+      background: rgba(255, 255, 255, 0.04);
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 8px;
       cursor: pointer;
       transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.02);
     }
-    
-    .message-item:hover {
-      background: rgba(255,255,255,0.12);
+
+    .message-item:hover,
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.08);
       transform: translateX(2px);
+      border-color: rgba(102, 126, 234, 0.3);
     }
-    
+
+    .history-item {
+      cursor: default;
+    }
+
     .message-lead {
       font-weight: 600;
       font-size: 13px;
       margin-bottom: 4px;
     }
-    
+
     .message-company {
       font-size: 11px;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255, 255, 255, 0.5);
     }
-    
+
     .message-preview {
       font-size: 12px;
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.4);
       margin-top: 6px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .empty-state {
       text-align: center;
-      padding: 30px;
-      color: rgba(255,255,255,0.5);
+      padding: 20px;
+      color: rgba(255, 255, 255, 0.3);
     }
-    
+
     .empty-icon {
-      font-size: 32px;
-      margin-bottom: 10px;
+      font-size: 24px;
+      margin-bottom: 6px;
+      opacity: 0.5;
     }
-    
+
+    .auto-hint {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.35);
+      text-align: center;
+      margin-top: 8px;
+    }
+
     /* Footer */
     .footer {
       padding: 12px 16px;
       text-align: center;
       font-size: 11px;
-      color: rgba(255,255,255,0.4);
+      color: rgba(255, 255, 255, 0.4);
     }
   </style>
 </head>
+
 <body>
   <div class="header">
     <h1>🚀 Lead Genius</h1>
     <div class="subtitle">LinkedIn Outreach Helper</div>
   </div>
-  
+
   <div class="content">
     <!-- Auth Section -->
     <div class="auth-section" id="authSection">
@@ -256,12 +395,35 @@
         <span class="dot disconnected"></span>
         <span id="statusText">Not Connected</span>
       </div>
-      
+
       <div id="loginForm">
-        <input type="text" class="token-input" id="apiToken" placeholder="Paste your API token here...">
-        <button class="btn btn-primary" id="connectBtn">Connect</button>
+        <!-- Auto-connect button -->
+        <button class="btn btn-auto" id="autoConnectBtn">⚡ Auto-connect from Web App</button>
+        <p class="auto-hint">Open your Lead Genius dashboard first, then click above</p>
+
+        <div class="divider">or login manually</div>
+
+        <!-- Error message -->
+        <div class="error-msg" id="connectError"></div>
+
+        <!-- Connecting spinner -->
+        <div class="connecting-state" id="connectingState">
+          <div class="spinner"></div>
+          <span>Connecting...</span>
+        </div>
+
+        <!-- Email / Password -->
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="emailInput" placeholder="admin@leadgenius.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="passwordInput" placeholder="Enter your password">
+        </div>
+        <button class="btn btn-primary" id="connectBtn">Log In & Connect</button>
       </div>
-      
+
       <div id="connectedInfo" style="display: none;">
         <p style="font-size: 12px; margin-bottom: 10px;">
           Connected as: <strong id="userEmail"></strong>
@@ -269,7 +431,7 @@
         <button class="btn btn-danger" id="disconnectBtn">Disconnect</button>
       </div>
     </div>
-    
+
     <!-- Stats (shown when connected) -->
     <div id="statsSection" style="display: none;">
       <div class="stats-grid">
@@ -283,14 +445,14 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Message Queue (shown when connected) -->
     <div class="queue-section" id="queueSection" style="display: none;">
       <div class="queue-header">
         <span class="queue-title">📨 Message Queue</span>
         <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
       </div>
-      
+
       <div class="message-list" id="messageList">
         <div class="empty-state">
           <div class="empty-icon">📭</div>
@@ -298,12 +460,27 @@
         </div>
       </div>
     </div>
+
+    <!-- History Section (shown when connected) -->
+    <div class="history-section" id="historySection" style="display: none;">
+      <div class="history-header">
+        <span class="history-title">📜 Recent History</span>
+      </div>
+
+      <div class="history-list" id="historyList">
+        <div class="empty-state">
+          <div class="empty-icon">📂</div>
+          <p>No activity yet</p>
+        </div>
+      </div>
+    </div>
   </div>
-  
+
   <div class="footer">
     Lead Genius v1.0.0 • Made with ❤️
   </div>
-  
+
   <script src="popup.js"></script>
 </body>
+
 </html>

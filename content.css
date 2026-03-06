@@ -1,5 +1,248 @@
 /* Lead Genius Extension - LinkedIn Content Styles */
 
-#lead-genius-helper {
-  z-index: 99999 !important;
+#lg-agent-bar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2147483647;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    pointer-events: auto;
+    animation: lg-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes lg-slide-in {
+    from {
+        transform: translateX(100%) scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.lg-bar-content {
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(16, 185, 129, 0.1);
+    color: white;
+    min-width: 320px;
+}
+
+.lg-logo-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lg-logo {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+.lg-info-section {
+    flex: 1;
+}
+
+.lg-profile-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.lg-status-pill {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lg-status-dot {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.lg-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.lg-btn {
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.lg-btn-primary {
+    background: #10b981;
+    color: white;
+}
+
+.lg-btn-primary:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.lg-btn-primary:disabled {
+    background: #1e293b;
+    color: #475569;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.lg-btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lg-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Composer Section */
+#lg-composer {
+    margin-top: 8px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+}
+
+.lg-composer-hidden {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+    pointer-events: none;
+    height: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden;
+}
+
+.lg-composer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.lg-composer-header span {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+}
+
+.lg-method-toggle {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px;
+    border-radius: 8px;
+    gap: 2px;
+}
+
+.lg-mode-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lg-mode-btn.active {
+    background: #10b981;
+    color: white;
+}
+
+#lg-message-area {
+    width: 100%;
+    min-height: 100px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    color: white;
+    font-size: 13px;
+    line-height: 1.5;
+    resize: none;
+    margin-bottom: 12px;
+    outline: none;
+}
+
+#lg-message-area:focus {
+    border-color: #10b981;
+}
+
+.lg-composer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#lg-char-count {
+    font-size: 10px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* Loading Spinner */
+.lg-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: lg-spin 0.8s linear infinite;
+}
+
+@keyframes lg-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
