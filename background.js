@@ -3,7 +3,7 @@
  * Handles API communication and message status updates
  */
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
 
 // =============================================================================
 // MESSAGE HANDLING

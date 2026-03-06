@@ -38,7 +38,7 @@ const SELECTORS = {
   commentText: '.comments-comment-item__main-content',
 };
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
 
 // =============================================================================
 // AUTO-CONNECT: Grab token from the Lead Genius web app (localhost:3000)

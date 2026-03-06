@@ -3,7 +3,7 @@
  * Auto-connects using the web app session, with email/password fallback
  */
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
 
 // =============================================================================
 // STATE
