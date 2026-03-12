@@ -41,15 +41,19 @@ const SELECTORS = {
   commentText: '.comments-comment-item__main-content',
 };
 
-const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+const API_BASE_URL = 'http://localhost:8000'; // Default to local for dev
+// const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
 
 // =============================================================================
 // AUTO-CONNECT: Grab token from the Lead Genius web app (localhost:3000)
 // =============================================================================
 
 async function autoConnectFromWebApp() {
-  // Only run on the Lead Genius web app
-  if (!window.location.host.includes('localhost:3000') && !window.location.host.includes('lead-gen-frontend-orcin.vercel.app')) return;
+  // Only run on the Lead Genius web app (supports localhost, 127.0.0.1 and production)
+  const isWebApp = window.location.host.includes('localhost') || 
+                  window.location.host.includes('127.0.0.1') || 
+                  window.location.host.includes('lead-gen-frontend-orcin.vercel.app');
+  if (!isWebApp) return;
 
   // Check if extension context is still valid
   if (!isExtensionValid()) return;
@@ -321,7 +325,8 @@ async function safeStorageGet(keys) {
 // Watch for login/logout changes on the web app page
 let authWatcherInterval = null;
 function startAuthWatcher() {
-  if (!window.location.origin.includes('localhost:3000')) return;
+  const isLocal = window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1');
+  if (!isLocal && !window.location.host.includes('vercel.app')) return;
 
   // Clear any existing interval just in case
   if (authWatcherInterval) clearInterval(authWatcherInterval);
@@ -366,7 +371,10 @@ function startAuthWatcher() {
   console.log('🚀 Lead Genius extension initialized');
 
   // Auto-connect if on the web app
-  if (window.location.origin.includes('localhost:3000')) {
+  const isWebApp = window.location.host.includes('localhost') || 
+                  window.location.host.includes('127.0.0.1') || 
+                  window.location.host.includes('vercel.app');
+  if (isWebApp) {
     autoConnectFromWebApp();
     startAuthWatcher();
   }

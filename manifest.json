@@ -14,7 +14,8 @@
         "*://*.linkedin.com/*",
         "*://linkedin.com/*",
         "http://localhost:8000/*",
-        "http://localhost:3000/*"
+        "http://localhost:3000/*",
+        "http://127.0.0.1:3000/*"
     ],
     "action": {
         "default_popup": "popup.html",
@@ -47,7 +48,8 @@
             "matches": [
                 "*://*.linkedin.com/*",
                 "*://linkedin.com/*",
-                "http://localhost:3000/*"
+                "http://localhost:3000/*",
+                "http://127.0.0.1:3000/*"
             ],
             "js": [
                 "content.js"
