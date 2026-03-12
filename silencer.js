@@ -16,50 +16,43 @@
         'Failed to load resource',
         'extension initialized',
         'parameter 1 is not of type \'Node\'',
-        'MutationObserver',
         'unload is not allowed',
         'Permissions policy violation',
         'Self-XSS',
         'attackers to impersonate you',
-        'Do not enter or paste code'
+        'Do not enter or paste code',
+        'permissions policy',
+        'violation'
     ];
     
     function shouldSilence(args) {
         try {
             return args.some(arg => {
+                if (!arg) return false;
                 const str = String(arg).toLowerCase();
                 return silenceStrings.some(s => str.includes(s.toLowerCase()));
             });
         } catch (e) { return false; }
     }
 
-    // Capture original methods
-    const origError = console.error;
-    const origWarn = console.warn;
-    const origLog = console.log;
+    // Capture and silence all console methods
+    ['log', 'warn', 'error', 'info', 'debug', 'dir', 'table', 'trace'].forEach(method => {
+        const orig = console[method];
+        if (typeof orig === 'function') {
+            console[method] = function(...args) {
+                if (shouldSilence(args)) return;
+                orig.apply(console, args);
+            };
+        }
+    });
 
-    console.error = function(...args) {
-        if (shouldSilence(args)) return;
-        origError.apply(console, args);
-    };
-    
-    console.warn = function(...args) {
-        if (shouldSilence(args)) return;
-        origWarn.apply(console, args);
-    };
-
-    console.log = function(...args) {
-        if (shouldSilence(args)) return;
-        origLog.apply(console, args);
-    };
-
-    // Aggressive clear on start to hide browser-cached noise
-    console.clear();
+    // Aggressive clear to wipe cached browser noise
+    setTimeout(() => console.clear(), 100);
+    setTimeout(() => console.clear(), 500);
 
     // Global error handlers
     window.addEventListener('error', function(e) {
-        const errInfo = [e.message, e.filename, e.error];
-        if (shouldSilence(errInfo)) {
+        if (shouldSilence([e.message, e.filename, e.error])) {
             e.stopImmediatePropagation();
             e.preventDefault();
         }
