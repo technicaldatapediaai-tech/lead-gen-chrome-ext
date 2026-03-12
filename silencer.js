@@ -8,8 +8,22 @@
         'WebGL context', 'WebGL contexts', 'utag.js', 'link rel=preload', 'ERR_BLOCKED_BY_CLIENT',
         'Failed to load resource', 'extension initialized', 'parameter 1 is not of type node',
         'unload is not allowed', 'Permissions policy violation', 'Self-XSS', 'attackers to impersonate you',
-        'Do not enter or paste code', 'permissions policy', 'violation'
+        'Do not enter or paste code', 'permissions policy', 'violation', 'web-client'
     ].map(s => s.toLowerCase());
+
+    /**
+     * PERMANENT BEHAVIORAL FIX:
+     * Instead of just hiding the error, we proxy the MutationObserver itself.
+     * If a script (like an extension) tries to observe something that isn't a Node,
+     * we silently ignore it so the browser NEVER throws the red TypeError.
+     */
+    try {
+        const origObserve = MutationObserver.prototype.observe;
+        MutationObserver.prototype.observe = function(target, options) {
+            if (!target || !(target instanceof Node)) return;
+            return origObserve.call(this, target, options);
+        };
+    } catch (e) {}
     
     function shouldSilence(args) {
         try {
