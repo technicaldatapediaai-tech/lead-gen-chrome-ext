@@ -10,18 +10,26 @@
         'visitor.publishDestinations', 
         'WebGL context', 
         'WebGL contexts',
-        'utag.js'
+        'utag.js',
+        'link rel=preload',
+        'ERR_BLOCKED_BY_CLIENT',
+        'Failed to load resource',
+        'extension initialized',
+        'parameter 1 is not of type \'Node\'',
+        'MutationObserver',
+        'unload is not allowed',
+        'Permissions policy violation',
+        'Self-XSS',
+        'attackers to impersonate you',
+        'Do not enter or paste code'
     ];
     
     function shouldSilence(args) {
         try {
-            const str = args.map(a => {
-                if (typeof a === 'string') return a;
-                if (a && a.message) return a.message;
-                if (a && a.stack) return a.stack;
-                return String(a);
-            }).join(' ');
-            return silenceStrings.some(s => str.includes(s));
+            return args.some(arg => {
+                const str = String(arg).toLowerCase();
+                return silenceStrings.some(s => str.includes(s.toLowerCase()));
+            });
         } catch (e) { return false; }
     }
 
@@ -40,15 +48,18 @@
         origWarn.apply(console, args);
     };
 
-    // Also suppress specific logs if they contain noise
     console.log = function(...args) {
         if (shouldSilence(args)) return;
         origLog.apply(console, args);
     };
 
+    // Aggressive clear on start to hide browser-cached noise
+    console.clear();
+
     // Global error handlers
     window.addEventListener('error', function(e) {
-        if (shouldSilence([e.message, e.filename, e.error])) {
+        const errInfo = [e.message, e.filename, e.error];
+        if (shouldSilence(errInfo)) {
             e.stopImmediatePropagation();
             e.preventDefault();
         }
@@ -61,7 +72,5 @@
         }
     }, true);
 
-    // Initial console cleanup
-    console.clear();
-    console.log("%c🛡️ Lead Genius: Defensive layer active. LinkedIn noise suppressed.", "color: #2563eb; font-weight: bold;");
+    console.log("%c🛡️ Lead Genius: Deep Defense Layer active.", "color: #2563eb; font-weight: bold;");
 })();

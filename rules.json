@@ -5,7 +5,7 @@
     "action": { "type": "block" },
     "condition": {
       "urlFilter": "*linkedin.com/platform-telemetry/*",
-      "resourceTypes": ["xmlhttprequest", "other", "ping", "script", "image"]
+      "resourceTypes": ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket", "other"]
     }
   },
   {
@@ -14,7 +14,7 @@
     "action": { "type": "block" },
     "condition": {
       "urlFilter": "*/li/apfcDf*",
-      "resourceTypes": ["xmlhttprequest", "other", "ping", "script", "image"]
+      "resourceTypes": ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket", "other"]
     }
   }
 ]
