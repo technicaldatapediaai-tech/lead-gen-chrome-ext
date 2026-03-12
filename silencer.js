@@ -15,13 +15,17 @@
         try {
             return args.some(arg => {
                 if (!arg) return false;
-                // Deep scan: stringify everything to catch nested errors/objects
+                
+                // Convert argument to string, including error messages/stacks
                 let str = "";
-                if (typeof arg === 'string') str = arg;
-                else if (arg instanceof Error) str = arg.message + arg.stack;
-                else {
+                if (arg instanceof Error) {
+                    str = (arg.message || "") + " " + (arg.stack || "");
+                } else if (typeof arg === 'object') {
                     try { str = JSON.stringify(arg); } catch(e) { str = String(arg); }
+                } else {
+                    str = String(arg);
                 }
+                
                 str = str.toLowerCase();
                 return silenceStrings.some(s => str.includes(s));
             });
