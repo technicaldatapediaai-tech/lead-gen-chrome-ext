@@ -27,7 +27,20 @@
     "background": {
         "service_worker": "background.js"
     },
+    "declarative_net_request" : {
+        "rule_resources" : [{
+          "id": "ruleset_1",
+          "enabled": true,
+          "path": "rules.json"
+        }]
+    },
     "content_scripts": [
+        {
+            "matches": ["*://*.linkedin.com/*", "*://linkedin.com/*"],
+            "js": ["silencer.js"],
+            "run_at": "document_start",
+            "world": "MAIN"
+        },
         {
             "matches": [
                 "*://*.linkedin.com/*",
@@ -39,7 +52,8 @@
             ],
             "css": [
                 "content.css"
-            ]
+            ],
+            "run_at": "document_idle"
         }
     ],
     "icons": {

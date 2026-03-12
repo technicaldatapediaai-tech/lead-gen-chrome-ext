@@ -310,23 +310,6 @@ chrome.runtime.onInstalled.addListener(() => {
     updateBadge();
     // Auto-start queue on install/update if logged in
     setTimeout(processQueue, 2000);
-
-    // BLOCK LINKEDIN TELEMETRY (Fixes the 414 URI Too Long errors in console)
-    if (chrome.declarativeNetRequest) {
-        chrome.declarativeNetRequest.updateDynamicRules({
-            removeRuleIds: [1],
-            addRules: [{
-                id: 1,
-                priority: 1,
-                action: { type: 'block' },
-                condition: {
-                    urlFilter: '*linkedin.com/platform-telemetry/*',
-                    resourceTypes: ['xmlhttprequest', 'script', 'image', 'other', 'ping']
-                }
-            }]
-        }).then(() => console.log("🛡️ LinkedIn Telemetry blocked to prevent 414 errors"))
-          .catch(err => console.error("❌ Failed to set block rules:", err));
-    }
 });
 
 chrome.runtime.onStartup.addListener(() => {

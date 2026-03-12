@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "*linkedin.com/platform-telemetry/*",
+      "resourceTypes": ["xmlhttprequest", "other", "ping", "script", "image"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "*/li/apfcDf*",
+      "resourceTypes": ["xmlhttprequest", "other", "ping", "script", "image"]
+    }
+  }
+]
