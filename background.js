@@ -321,7 +321,7 @@ chrome.runtime.onInstalled.addListener(() => {
                 action: { type: 'block' },
                 condition: {
                     urlFilter: '*linkedin.com/platform-telemetry/*',
-                    resourceTypes: ['xmlhttprequest', 'other']
+                    resourceTypes: ['xmlhttprequest', 'script', 'image', 'other', 'ping']
                 }
             }]
         }).then(() => console.log("🛡️ LinkedIn Telemetry blocked to prevent 414 errors"))

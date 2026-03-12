@@ -8,6 +8,51 @@
 // CONFIGURATION
 // =============================================================================
 
+// =============================================================================
+// CONSOLE SILENCE (Silences LinkedIn's internal telemetry/WebGL noise)
+// =============================================================================
+(function silenceNoise() {
+  const silenceStrings = ['platform-telemetry', 'li/apfcDf', 'MutationObserver', 'visitor.publishDestinations', 'WebGL context', 'WebGL contexts'];
+  
+  function shouldSilence(args) {
+    try {
+      const str = args.map(a => {
+        if (typeof a === 'string') return a;
+        if (a && a.message) return a.message;
+        if (a && a.stack) return a.stack;
+        return String(a);
+      }).join(' ');
+      return silenceStrings.some(s => str.includes(s));
+    } catch (e) { return false; }
+  }
+
+  const origError = console.error;
+  console.error = function(...args) {
+    if (shouldSilence(args)) return;
+    origError.apply(console, args);
+  };
+  
+  const origWarn = console.warn;
+  console.warn = function(...args) {
+    if (shouldSilence(args)) return;
+    origWarn.apply(console, args);
+  };
+
+  window.addEventListener('error', function(e) {
+    if (shouldSilence([e.message, e.filename, e.error])) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    }
+  }, true);
+
+  window.addEventListener('unhandledrejection', function(e) {
+    if (shouldSilence([e.reason])) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    }
+  }, true);
+})();
+
 const SELECTORS = {
   // InMail / Direct Message selectors
   messageButton: 'button[aria-label*="Message"]',
