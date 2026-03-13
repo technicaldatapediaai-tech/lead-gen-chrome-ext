@@ -3,7 +3,7 @@
  * Auto-connects using the web app session, with email/password fallback
  */
 
-const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+const API_BASE_URL = 'http://localhost:8000';
 
 // =============================================================================
 // STATE
@@ -119,7 +119,7 @@ async function tryAutoConnect() {
 
     try {
         // Ask the content script on localhost:3000 or the Vercel URL to send the token
-        const tabs = await chrome.tabs.query({ url: ['*://localhost:3000/*', '*://lead-gen-frontend-orcin.vercel.app/*'] });
+        const tabs = await chrome.tabs.query({ url: ['*://localhost/*', '*://127.0.0.1/*', '*://lead-gen-frontend-orcin.vercel.app/*'] });
 
         if (tabs.length > 0) {
             // Execute script in the web app tab to grab the token
