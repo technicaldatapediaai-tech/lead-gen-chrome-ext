@@ -3,7 +3,25 @@
  * Auto-connects using the web app session, with email/password fallback
  */
 
-const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+// Helper to get API URL - defaults to local, then Render
+let API_BASE_URL = 'http://localhost:8000'; 
+
+// Check if we should use production
+async function refreshApiBaseUrl() {
+    const data = await chrome.storage.local.get('apiBaseUrl');
+    if (data.apiBaseUrl) {
+        API_BASE_URL = data.apiBaseUrl;
+    } else {
+        // Fallback check
+        try {
+            const res = await fetch('http://localhost:8000/health', { method: 'HEAD' });
+            if (!res.ok) throw new Error();
+        } catch (e) {
+            API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+        }
+    }
+}
+refreshApiBaseUrl();
 
 // =============================================================================
 // STATE

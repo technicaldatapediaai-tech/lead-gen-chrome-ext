@@ -448,7 +448,17 @@ window.addEventListener("message", async (event) => {
   try {
     if (type === "LEAD_GENIUS_CONNECT") {
       console.log("🔗 Lead Genius: Received token from Dashboard");
-      await chrome.storage.local.set({ token: payload.token });
+      if (payload.token) {
+        // Save and trigger full sync
+        await chrome.storage.local.set({ token: payload.token });
+        
+        // Also sync API URL to background
+        if (payload.apiUrl) {
+          safeSendMessage({ action: "setApiUrl", url: payload.apiUrl });
+        }
+        
+        autoConnectFromWebApp(); 
+      }
     }
 
     if (type === "LEAD_GENIUS_START_BATCH") {
