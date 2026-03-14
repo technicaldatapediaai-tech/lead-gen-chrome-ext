@@ -41,8 +41,8 @@ const SELECTORS = {
   commentText: '.comments-comment-item__main-content',
 };
 
-const API_BASE_URL = 'http://localhost:8000'; // Default to local for dev
-// const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+// const API_BASE_URL = 'http://localhost:8000'; // Default to local for dev
+const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
 
 // =============================================================================
 // AUTO-CONNECT: Grab token from the Lead Genius web app (localhost:3000)
@@ -704,7 +704,7 @@ async function executeAutomatedSending(messageData) {
     if (response && response.count === 0) {
       showProcessingOverlay("🎉 All messages sent! returning to CRM...", "success");
       await sleep(2000);
-      window.location.href = "http://localhost:3000/dashboard/crm";
+      window.location.href = "https://lead-gen-frontend-orcin.vercel.app/dashboard/crm";
     } else {
       removeOverlay();
     }
@@ -814,7 +814,7 @@ async function executeConnectionRequest(messageData) {
     if (response && response.count === 0) {
       showProcessingOverlay("🎉 All requests sent! returning to dashboard...", "success");
       await sleep(2000);
-      window.location.href = "http://localhost:3000/dashboard";
+      window.location.href = "https://lead-gen-frontend-orcin.vercel.app/dashboard";
     } else {
       removeOverlay();
     }
