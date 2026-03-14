@@ -52,7 +52,7 @@ async function autoConnectFromWebApp() {
   // Only run on the Lead Genius web app (supports localhost, 127.0.0.1 and production)
   const isWebApp = window.location.host.includes('localhost') || 
                   window.location.host.includes('127.0.0.1') || 
-                  window.location.host.includes('lead-gen-frontend-orcin.vercel.app');
+                  window.location.host.includes('lead-genius-frontend-orcin.vercel.app');
   if (!isWebApp) return;
 
   // Check if extension context is still valid
@@ -326,7 +326,7 @@ async function safeStorageGet(keys) {
 let authWatcherInterval = null;
 function startAuthWatcher() {
   const isLocal = window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1');
-  if (!isLocal && !window.location.host.includes('vercel.app')) return;
+  if (!isLocal && !window.location.host.includes('lead-genius-frontend-orcin.vercel.app')) return;
 
   // Clear any existing interval just in case
   if (authWatcherInterval) clearInterval(authWatcherInterval);
