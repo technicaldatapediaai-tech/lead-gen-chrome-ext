@@ -460,9 +460,10 @@ window.addEventListener("message", async (event) => {
         // Also sync API URL to background
         if (payload.apiUrl) {
           safeSendMessage({ action: "setApiUrl", url: payload.apiUrl });
+          API_BASE_URL = payload.apiUrl; // Use immediately for autoConnect
         }
         
-        autoConnectFromWebApp(); 
+        autoConnectFromWebApp();
       }
     }
 
