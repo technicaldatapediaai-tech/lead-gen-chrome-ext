@@ -136,8 +136,17 @@ async function tryAutoConnect() {
     showConnecting('Looking for active session...');
 
     try {
-        // Ask the content script on localhost:3000 or the Vercel URL to send the token
-        const tabs = await chrome.tabs.query({ url: ['*://localhost/*', '*://127.0.0.1/*', '*://lead-gen-frontend-orcin.vercel.app/*'] });
+        // Ask the content script on the web app to send the token
+        const tabs = await chrome.tabs.query({ 
+            url: [
+                '*://localhost/*', 
+                '*://127.0.0.1/*', 
+                '*://lead-genius-frontend-orcin.vercel.app/*',
+                '*://lead-genius-saas.vercel.app/*',
+                '*://lead-genius-frontend.vercel.app/*',
+                '*://*.vercel.app/*'
+            ] 
+        });
 
         if (tabs.length > 0) {
             // Execute script in the web app tab to grab the token

@@ -14,7 +14,10 @@
         "*://*.linkedin.com/*",
         "*://linkedin.com/*",
         "https://lead-gen-backend-dcxf.onrender.com/*",
-        "https://lead-gen-frontend-orcin.vercel.app/*",
+        "https://lead-genius-frontend-orcin.vercel.app/*",
+        "https://lead-genius-saas.vercel.app/*",
+        "https://lead-genius-frontend.vercel.app/*",
+        "https://*.vercel.app/*",
         "http://localhost:8000/*",
         "http://localhost:3000/*",
         "http://127.0.0.1:3000/*"
@@ -50,7 +53,10 @@
             "matches": [
                 "*://*.linkedin.com/*",
                 "*://linkedin.com/*",
-                "https://lead-gen-frontend-orcin.vercel.app/*",
+                "https://lead-genius-frontend-orcin.vercel.app/*",
+                "https://lead-genius-saas.vercel.app/*",
+                "https://lead-genius-frontend.vercel.app/*",
+                "https://*.vercel.app/*",
                 "http://localhost:3000/*",
                 "http://127.0.0.1:3000/*"
             ],

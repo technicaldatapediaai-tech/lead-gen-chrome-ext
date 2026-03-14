@@ -41,18 +41,23 @@ const SELECTORS = {
   commentText: '.comments-comment-item__main-content',
 };
 
-// const API_BASE_URL = 'http://localhost:8000'; // Default to local for dev
-const API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+// Guess API URL based on environment or storage
+let API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com'; // Default to prod
+chrome.storage.local.get(['apiBaseUrl'], (result) => {
+  if (result.apiBaseUrl) API_BASE_URL = result.apiBaseUrl;
+});
 
 // =============================================================================
 // AUTO-CONNECT: Grab token from the Lead Genius web app (localhost:3000)
 // =============================================================================
 
 async function autoConnectFromWebApp() {
-  // Only run on the Lead Genius web app (supports localhost, 127.0.0.1 and production)
-  const isWebApp = window.location.host.includes('localhost') || 
-                  window.location.host.includes('127.0.0.1') || 
-                  window.location.host.includes('lead-genius-frontend-orcin.vercel.app');
+  // Only run on the Lead Genius web app
+  const host = window.location.host;
+  const isWebApp = host.includes('localhost') || 
+                  host.includes('127.0.0.1') || 
+                  host.includes('vercel.app') || 
+                  host.includes('lead-genius');
   if (!isWebApp) return;
 
   // Check if extension context is still valid
