@@ -8,7 +8,7 @@
         'WebGL context', 'WebGL contexts', 'utag.js', 'link rel=preload', 'ERR_BLOCKED_BY_CLIENT',
         'Failed to load resource', 'extension initialized', 'parameter 1 is not of type node',
         'unload is not allowed', 'Permissions policy violation', 'Self-XSS', 'attackers to impersonate you',
-        'Do not enter or paste code', 'permissions policy', 'violation', 'web-client'
+        'Do not enter or paste code', 'permissions policy', 'violation', 'web-client', 'chrome-extension://invalid'
     ].map(s => s.toLowerCase());
 
     /**
