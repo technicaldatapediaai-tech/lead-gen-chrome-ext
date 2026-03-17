@@ -41,11 +41,24 @@ const SELECTORS = {
   commentText: '.comments-comment-item__main-content',
 };
 
-// Guess API URL based on environment or storage
-let API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com'; // Default to prod
-chrome.storage.local.get(['apiBaseUrl'], (result) => {
-  if (result.apiBaseUrl) API_BASE_URL = result.apiBaseUrl;
-});
+// Helper to get API URL - defaults to local, then Render
+let API_BASE_URL = 'http://localhost:8000';
+
+async function refreshApiBaseUrl() {
+  const data = await chrome.storage.local.get('apiBaseUrl');
+  if (data.apiBaseUrl) {
+    API_BASE_URL = data.apiBaseUrl;
+  } else {
+    // Fallback check
+    try {
+      const res = await fetch('http://localhost:8000/health', { method: 'HEAD' });
+      if (!res.ok) throw new Error();
+    } catch (e) {
+      API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+    }
+  }
+}
+refreshApiBaseUrl();
 
 // =============================================================================
 // AUTO-CONNECT: Grab token from the Lead Genius web app (localhost:3000)
