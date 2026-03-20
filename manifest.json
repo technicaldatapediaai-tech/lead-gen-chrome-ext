@@ -42,12 +42,21 @@
     },
     "content_scripts": [
         {
-            "matches": ["<all_urls>"],
+            "matches": [
+                "*://*.linkedin.com/*",
+                "*://linkedin.com/*",
+                "https://lead-genius-frontend-orcin.vercel.app/*",
+                "https://lead-genius-saas.vercel.app/*",
+                "https://lead-genius-frontend.vercel.app/*",
+                "https://*.vercel.app/*",
+                "http://localhost:3000/*",
+                "http://127.0.0.1:3000/*"
+            ],
             "js": ["silencer.js"],
             "run_at": "document_start",
             "world": "MAIN",
-            "all_frames": true,
-            "match_about_blank": true
+            "all_frames": false,
+            "match_about_blank": false
         },
         {
             "matches": [

@@ -19,13 +19,17 @@
 
     const shouldSilence = (args) => {
         try {
-            const combined = Array.from(args).map(arg => {
-                if (typeof arg === 'string') return arg;
-                if (arg instanceof Error) return arg.message;
-                try { return JSON.stringify(arg); } catch (e) { return ''; }
-            }).join(' ').toLowerCase();
-
-            return silenceStrings.some(s => combined.includes(s));
+            // Concatenate all string versions of arguments for searching
+            let text = "";
+            for(let i=0; i<args.length; i++) {
+                const arg = args[i];
+                if (typeof arg === 'string') text += arg;
+                else if (arg instanceof Error) text += arg.message;
+                // Avoid JSON.stringify on objects during silencing check 
+                // as it can reach recursivity limits or break proxies
+            }
+            text = text.toLowerCase();
+            return silenceStrings.some(s => text.includes(s));
         } catch (e) {
             return false;
         }
