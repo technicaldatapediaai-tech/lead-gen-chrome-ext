@@ -45,16 +45,27 @@ const SELECTORS = {
 let API_BASE_URL = 'http://localhost:8000';
 
 async function refreshApiBaseUrl() {
-  const data = await chrome.storage.local.get('apiBaseUrl');
-  if (data.apiBaseUrl) {
-    API_BASE_URL = data.apiBaseUrl;
-  } else {
-    // Fallback check
-    try {
-      const res = await fetch('http://localhost:8000/health', { method: 'HEAD' });
-      if (!res.ok) throw new Error();
-    } catch (e) {
-      API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+  if (isOrphaned()) return;
+  try {
+    const data = await chrome.storage.local.get('apiBaseUrl');
+    if (data.apiBaseUrl) {
+      API_BASE_URL = data.apiBaseUrl;
+      console.log('🌐 Lead Genius: Using saved URL:', API_BASE_URL);
+    } else {
+      // Fallback check
+      try {
+        const res = await fetch('http://localhost:8000/health', { method: 'HEAD' }).catch(() => ({ ok: false }));
+        if (!res.ok) throw new Error();
+        API_BASE_URL = 'http://localhost:8000';
+      } catch (e) {
+        API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+        console.log('🌐 Lead Genius: Using production fallback:', API_BASE_URL);
+      }
+    }
+  } catch (e) {
+    // Context invalidated probably
+    if (API_BASE_URL.includes('localhost')) {
+       API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
     }
   }
 }
@@ -213,9 +224,19 @@ function isExtensionValid() {
 
 /**
  * Check if this content script is an 'orphan' (extension disconnected)
+ * If orphaned, we should remove our UI elements.
  */
 function isOrphaned() {
-  return !isExtensionValid();
+  const orphaned = !isExtensionValid();
+  if (orphaned) {
+      const bar = document.getElementById('lg-agent-bar');
+      if (bar) bar.remove();
+      const badge = document.getElementById('lg-connection-badge');
+      if (badge) badge.remove();
+      const overlay = document.getElementById('lg-processing-overlay');
+      if (overlay) overlay.remove();
+  }
+  return orphaned;
 }
 
 /**
@@ -638,12 +659,21 @@ async function executeAutomatedSending(messageData) {
       if (moreBtn) {
         moreBtn.click();
         await sleep(1000);
+
+        // EXTRA: Dismiss any popups that might have appeared (like "Try Premium")
+        dismissLinkedInModals();
+        await sleep(500);
+
         // Retry semantic search after opening more menu
         messageBtn = findSemanticElement('message');
       }
     }
 
     if (!messageBtn) {
+      // Check if it's because of a Premium modal blocking the view
+      if (document.querySelector('.artdeco-modal, .upsell-modal, [aria-label*="Premium"]')) {
+        throw new Error("LinkedIn Premium popup is blocking the action. Please close it and try again.");
+      }
       throw new Error("Could not find Message button. You may not be connected or it is restricted.");
     }
 
@@ -667,9 +697,19 @@ async function executeAutomatedSending(messageData) {
     await sleep(500);
 
     // CENTRALIZED FILLING
-    const success = await fillMessage(messageData.message);
+    let success = false;
+    // Retry filling 3 times with small delays if it fails
+    for (let i = 0; i < 3; i++) {
+        success = await fillMessage(messageData.message);
+        if (success) break;
+        
+        // If it failed, maybe a modal popped up? Close it and retry
+        dismissLinkedInModals();
+        await sleep(1000);
+    }
+
     if (!success) {
-      throw new Error("Message editor failed to receive text. Try opening it manually once.");
+      throw new Error("Message editor failed to receive text. Try opening it manually once or checking for blockers.");
     }
 
     await sleep(400);
@@ -1111,11 +1151,13 @@ function showExtractionHelper() {
  * Fills the LinkedIn message box or connection note with content
  */
 async function fillMessage(message) {
+  if (isOrphaned()) return false;
   console.log("🤖 Lead Genius: Attempting to fill message...");
 
   // Selectors for various LinkedIn editors
   const selectors = [
     '.msg-form__contenteditable',
+    '.msg-form__textarea',
     '[contenteditable="true"]',
     'textarea[name="message"]',
     'textarea#custom-message',
@@ -1123,22 +1165,62 @@ async function fillMessage(message) {
   ];
 
   let msgBox = null;
+  // Try to find the most appropriate visible message box
   for (const sel of selectors) {
     const el = document.querySelector(sel);
     if (el && el.offsetParent !== null) {
-      msgBox = el;
-      break;
+      // Ensure it's not a search box or something else
+      const placeholder = el.getAttribute('placeholder') || '';
+      const ariaLabel = el.getAttribute('aria-label') || '';
+      
+      // If it looks like a message box, take it
+      if (ariaLabel.toLowerCase().includes('message') || 
+          ariaLabel.toLowerCase().includes('note') ||
+          placeholder.toLowerCase().includes('write') ||
+          placeholder.toLowerCase().includes('message') ||
+          el.classList.contains('msg-form__contenteditable')) {
+        msgBox = el;
+        break;
+      }
     }
+  }
+
+  // Fallback: if no specific message box, just take the first visible textarea/contenteditable
+  if (!msgBox) {
+      for (const sel of selectors) {
+          const el = document.querySelector(sel);
+          if (el && el.offsetParent !== null) {
+              msgBox = el;
+              break;
+          }
+      }
   }
 
   if (msgBox) {
     msgBox.focus();
+    await sleep(200);
 
     // Use document.execCommand for most reliable LinkedIn filling for SPAs
     try {
+      // Clear existing content first if it's a textarea
+      if (msgBox.tagName === 'TEXTAREA') {
+          msgBox.value = '';
+      } else {
+          msgBox.innerHTML = '';
+      }
+      
       document.execCommand('insertText', false, message);
+      
+      // Fallback if execCommand did nothing (happens on some systems)
+      const currentVal = msgBox.tagName === 'TEXTAREA' ? msgBox.value : msgBox.innerText;
+      if (!currentVal || currentVal.length < 5) {
+          if (msgBox.tagName === 'TEXTAREA') {
+            msgBox.value = message;
+          } else {
+            msgBox.innerText = message;
+          }
+      }
     } catch (e) {
-      // Fallback to direct value setting if execCommand is not supported (rare)
       if (msgBox.tagName === 'TEXTAREA') {
         msgBox.value = message;
       } else {
@@ -1146,16 +1228,59 @@ async function fillMessage(message) {
       }
     }
 
-    // Trigger input events for LinkedIn's state management
-    msgBox.dispatchEvent(new Event('input', { bubbles: true }));
-    msgBox.dispatchEvent(new Event('change', { bubbles: true }));
+    // Trigger events for LinkedIn's state management
+    ['input', 'change', 'keydown', 'keypress', 'keyup'].forEach(evt => {
+        msgBox.dispatchEvent(new Event(evt, { bubbles: true }));
+    });
 
     console.log("✅ Lead Genius: Message filled.");
     return true;
   } else {
+    // If we can't find it, check if a modal is blocking the UI
+    dismissLinkedInModals();
     console.log("❌ Lead Genius: Could not find message box.");
     return false;
   }
+}
+
+/**
+ * Automatically find and dismiss common LinkedIn popups/modals
+ * that block automation (like Premium trials, feedback requests, etc.)
+ */
+function dismissLinkedInModals() {
+  const dismissSelectors = [
+    'button[aria-label="Dismiss"]',
+    'button[aria-label="Close"]',
+    '.artdeco-modal__dismiss',
+    '.upsell-modal__dismiss',
+    '.msg-overlay-bubble-header__control--close-button',
+    'button.msg-overlay-bubble-header__control[aria-label*="Close"]'
+  ];
+
+  let dismissed = false;
+  for (const sel of dismissSelectors) {
+    const btn = document.querySelector(sel);
+    if (btn && btn.offsetParent !== null) {
+      console.log("🧹 Lead Genius: Dismissing blocking modal...");
+      btn.click();
+      dismissed = true;
+    }
+  }
+  
+  // Specific check for the "Try Premium" modal in the screenshot
+  const premiumModal = Array.from(document.querySelectorAll('.artdeco-modal')).find(m => 
+    m.innerText.includes('Premium') && m.innerText.includes('Unlock')
+  );
+  if (premiumModal) {
+      const closeBtn = premiumModal.querySelector('button[aria-label="Dismiss"], .artdeco-modal__dismiss');
+      if (closeBtn) {
+          console.log("🧹 Lead Genius: Closing Premium upsell...");
+          closeBtn.click();
+          dismissed = true;
+      }
+  }
+
+  return dismissed;
 }
 
 async function updateMessageStatus(messageId, status, errorMessage) {
