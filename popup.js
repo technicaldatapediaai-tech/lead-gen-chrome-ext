@@ -8,19 +8,40 @@ let API_BASE_URL = 'http://localhost:8000';
 
 // Check if we should use production
 async function refreshApiBaseUrl() {
-    const data = await chrome.storage.local.get('apiBaseUrl');
-    if (data.apiBaseUrl) {
-        API_BASE_URL = data.apiBaseUrl;
-    } else {
-        // Fallback check
-        try {
-            const res = await fetch('http://localhost:8000/health', { method: 'HEAD' });
-            if (!res.ok) throw new Error();
-        } catch (e) {
-            API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+    try {
+        const data = await chrome.storage.local.get('apiBaseUrl');
+        if (data.apiBaseUrl) {
+            API_BASE_URL = data.apiBaseUrl;
+            console.log('🌐 Lead Genius: Using saved URL:', API_BASE_URL);
+        } else {
+            // Fallback check
+            try {
+                // Short timeout for health check
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1000);
+                
+                const res = await fetch('http://localhost:8000/health', { 
+                    method: 'HEAD',
+                    signal: controller.signal 
+                }).catch(() => ({ ok: false }));
+                
+                clearTimeout(timeoutId);
+                
+                if (res.ok) {
+                    API_BASE_URL = 'http://localhost:8000';
+                } else {
+                    API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+                    console.log('🌐 Lead Genius: Switching to production fallback');
+                }
+            } catch (e) {
+                API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+            }
         }
+    } catch (e) {
+        API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
     }
 }
+// Start immediately but we will also await it in DOMContentLoaded
 refreshApiBaseUrl();
 
 // =============================================================================
@@ -69,6 +90,9 @@ const elements = {
 // =============================================================================
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // CRITICAL: Await the API URL discovery before doing anything else
+    await refreshApiBaseUrl();
+
     // Load saved state
     const savedState = await chrome.storage.local.get(['token', 'userEmail', 'orgId']);
 
@@ -204,6 +228,13 @@ async function tryAutoConnect() {
     } catch (err) {
         hideConnecting();
         console.error('Auto-connect failed:', err);
+        
+        // If it failed because of a fetch error (server down), try switching fallbacks and inform user
+        if (err.name === 'TypeError' || err.message.includes('fetch')) {
+            console.log("🔄 Fetch failed, retrying with production fallback...");
+            API_BASE_URL = 'https://lead-gen-backend-dcxf.onrender.com';
+            // Don't recursive call to avoid loops, just let user try again or login normally
+        }
     }
 }
 

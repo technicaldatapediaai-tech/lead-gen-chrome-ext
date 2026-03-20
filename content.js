@@ -78,10 +78,8 @@ refreshApiBaseUrl();
 async function autoConnectFromWebApp() {
   // Only run on the Lead Genius web app
   const host = window.location.host;
-  const isWebApp = host.includes('localhost') || 
-                  host.includes('127.0.0.1') || 
-                  host.includes('vercel.app') || 
-                  host.includes('lead-genius');
+  const isWebApp = (host.includes('localhost') || host.includes('127.0.0.1')) || 
+                  (host.includes('lead-genius') && host.includes('vercel.app'));
   if (!isWebApp) return;
 
   // Check if extension context is still valid
@@ -129,16 +127,10 @@ async function autoConnectFromWebApp() {
         console.log('❌ Token validation failed');
         showConnectionBadge('error');
       }
-    } else {
-      console.log('ℹ️ No token found - user not logged in yet');
-
-      // Clear extension storage if user logged out from web app
-      const saved = await chrome.storage.local.get(['token']);
-      if (saved.token) {
-        await chrome.storage.local.remove(['token', 'userEmail', 'orgId']);
-        console.log('🔓 Extension disconnected (user logged out of web app)');
-        showConnectionBadge('disconnected');
-      }
+    } else if (saved.token && window.location.href.includes('/dashboard')) {
+      console.log('ℹ️ Clearing extension storage - user is visiting dashboard while logged out');
+      await chrome.storage.local.remove(['token', 'userEmail', 'orgId']);
+      showConnectionBadge('disconnected');
     }
   } catch (err) {
     if (err.message.includes('context invalidated')) {
@@ -410,9 +402,8 @@ function startAuthWatcher() {
   console.log('🚀 Lead Genius extension initialized');
 
   // Auto-connect if on the web app
-  const isWebApp = window.location.host.includes('localhost') || 
-                  window.location.host.includes('127.0.0.1') || 
-                  window.location.host.includes('vercel.app');
+  const isWebApp = (window.location.host.includes('localhost') || window.location.host.includes('127.0.0.1')) || 
+                  (window.location.host.includes('lead-genius') && window.location.host.includes('vercel.app'));
   if (isWebApp) {
     autoConnectFromWebApp();
     startAuthWatcher();
